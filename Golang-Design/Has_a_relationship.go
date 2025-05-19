@@ -1,5 +1,3 @@
-## Has_a relation ship
-```golang
 package main
 
 import "fmt"
@@ -25,5 +23,3 @@ func main() {
 	c.startcar()
 
 }
-
-```
