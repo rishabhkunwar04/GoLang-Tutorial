@@ -233,9 +233,7 @@ func main() {
 ### Dependency Inversion
 ```Golang
 ❌ DIP Violation Example in Go
-go
-Copy
-Edit
+
 package main
 
 import "fmt"
@@ -270,9 +268,7 @@ func main() {
 
 
 ✅ DIP-Compliant Example in Go
-go
-Copy
-Edit
+
 package main
 
 import "fmt"
