@@ -1,4 +1,4 @@
-## Has_a relation ship
+### Has_a relation ship
 ```golang
 package main
 
@@ -28,7 +28,7 @@ func main() {
 
 ```
 
-## composition in golang
+### composition in golang
 ```golang
 package main
 
@@ -76,7 +76,7 @@ func main() {
 
 ```
 
-## Open closed principle
+### Open closed principle
 ```Golang
 package main
 
@@ -148,7 +148,7 @@ func main() {
 }
 
 ```
-## Interface Segeration
+### Interface Segeration
 ```Golang
 package main
 
@@ -230,7 +230,7 @@ func main() {
 }
 ```
 
-## Dependency Inversion
+### Dependency Inversion
 ```Golang
 ❌ DIP Violation Example in Go
 go
@@ -320,5 +320,43 @@ func main() {
 
 	smsNotification := NewNotification(smsService)
 	smsNotification.Notify("Hello via SMS!")
+}
+```
+
+### Dependency Injection
+```golang
+package main
+
+import (
+	"fmt"
+)
+
+type printer interface {
+	print(message string)
+}
+
+type printMachine struct{}
+
+func (p *printMachine) print(message string) {
+	fmt.Println(message)
+}
+
+type app struct {
+	printApp printer
+}
+
+// now dpendency injection via constructor
+func NewApp(printApp2 printer) *app {
+	return &app{printApp: printApp2}
+}
+
+func (a *app) run() {
+	a.printApp.print("printing...")
+}
+func main() {
+	printer := printMachine{}
+	app := NewApp(&printer)
+	app.run()
+
 }
 ```
