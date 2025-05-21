@@ -1,4 +1,4 @@
-### Has_a relation ship
+#### Has_a relation ship
 ```golang
 package main
 
@@ -28,7 +28,7 @@ func main() {
 
 ```
 
-### composition in golang
+#### composition in golang
 ```golang
 package main
 
@@ -76,7 +76,7 @@ func main() {
 
 ```
 
-### Open closed principle
+#### Open closed principle
 ```Golang
 package main
 
@@ -148,7 +148,7 @@ func main() {
 }
 
 ```
-### Interface Segeration
+#### Interface Segeration
 ```Golang
 package main
 
@@ -230,7 +230,7 @@ func main() {
 }
 ```
 
-### Dependency Inversion
+#### Dependency Inversion
 ```Golang
 ❌ DIP Violation Example in Go
 
@@ -319,7 +319,7 @@ func main() {
 }
 ```
 
-### Dependency Injection
+#### Dependency Injection
 ```golang
 package main
 
@@ -357,7 +357,7 @@ func main() {
 }
 ```
 
-### singleton design pattern
+#### singleton design pattern
 ```Golang
 ✅ 1. Lazy Initialization (Not Thread-Safe)
 
