@@ -359,32 +359,92 @@ func main() {
 
 ### singleton design pattern
 ```Golang
-✅ 1. Lazy Initialization (Not Thread-Safe)
 
-package singleton
+1. Lazy Initialization (Not Thread-Safe)
 
+package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+// Singleton struct
 type Singleton struct{}
 
 var instance *Singleton
+var once sync.Once
 
-func GetInstance() *Singleton {
-	if instance == nil {
+// getInstance is similar to Java's getInstance()
+func getInstance() *Singleton {
+	once.Do(func() {
 		instance = &Singleton{}
-	}
+	})
 	return instance
 }
-✅ 2. Eager Initialization
 
-package singleton
+func main() {
+	s1 := getInstance()
+	s2 := getInstance()
 
+	fmt.Println("Are s1 and s2 the same?", s1 == s2) // true
+}
+
+ 2. Eager Initialization
+
+package main
+
+import "fmt"
+
+// Singleton struct - unexported to prevent direct instantiation
 type Singleton struct{}
 
-var instance = &Singleton{} // created at the time of package loading
+// Eagerly created singleton instance
+var instance = &Singleton{}
 
 func GetInstance() *Singleton {
 	return instance
 }
-✅ 3. Thread-Safe Lazy Initialization (Double-Checked Locking)
+
+func main() {
+	s1 := GetInstance()
+	s2 := GetInstance()
+
+	fmt.Println("Are s1 and s2 the same?", s1 == s2) // Output: true
+}
+
+
+ 3. Thread safe lazy initialization
+ package main
+
+import (
+	"fmt"
+	"sync"
+)
+
+// Singleton struct
+type Singleton struct{}
+
+var instance *Singleton
+var once sync.Once
+
+// getInstance is similar to Java's getInstance()
+func getInstance() *Singleton {
+	once.Do(func() {
+		instance = &Singleton{}
+	})
+	return instance
+}
+
+func main() {
+	s1 := getInstance()
+	s2 := getInstance()
+
+	fmt.Println("Are s1 and s2 the same?", s1 == s2) // true
+}
+
+
+ 4. Double-Checked Locking
 
 package singleton
 
@@ -409,7 +469,8 @@ func GetInstance() *Singleton {
 	}
 	return instance
 }
-✅ 4. Enum Singleton Equivalent in Go
+ 4. Enum Singleton Equivalent in Go
+ 
 Go doesn’t have enums with behavior like Java, but you can achieve the same effect using a constant struct instance.
 
 package singleton
