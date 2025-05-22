@@ -1,4 +1,4 @@
-##Parling lot having ticket system# Has_a relation ship
+### Has_a relation ship
 ```golang
 package main
 
@@ -28,7 +28,7 @@ func main() {
 
 ```
 
-##Parling lot having ticket system# composition in golang
+### composition in golang
 ```golang
 package main
 
@@ -76,7 +76,7 @@ func main() {
 
 ```
 
-##Parling lot having ticket system# Open closed principle
+### Open closed principle
 ```Golang
 package main
 
@@ -148,7 +148,7 @@ func main() {
 }
 
 ```
-##Parling lot having ticket system# Interface Segeration
+### Interface Segeration
 ```Golang
 package main
 
@@ -230,7 +230,7 @@ func main() {
 }
 ```
 
-##Parling lot having ticket system# Dependency Inversion
+### Dependency Inversion
 ```Golang
 ❌ DIP Violation Example in Go
 
@@ -319,7 +319,7 @@ func main() {
 }
 ```
 
-##Parling lot having ticket system# Dependency Injection
+### Dependency Injection
 ```golang
 package main
 
@@ -357,7 +357,7 @@ func main() {
 }
 ```
 
-##Parling lot having ticket system# singleton design pattern
+### singleton design pattern
 ```Golang
 ✅ 1. Lazy Initialization (Not Thread-Safe)
 
@@ -423,70 +423,8 @@ func (e *enumSingleton) DoSomething() {
 }
 ```
 
-##Parling lot having ticket system Simple parking Lot
+## Google Doc Design
 ```go
-1. Vehicle
-Number: string – Vehicle registration number
-
-Type: VehicleType – Enum (Bike, Car, Truck)
-
-2. ParkingSlot
-SlotNumber: int – Unique identifier for the slot
-
-IsOccupied: bool – Flag to indicate if the slot is occupied
-
-Vehicle: *Vehicle – Pointer to the parked vehicle
-
-SlotType: VehicleType – Type of vehicle this slot supports
-
-3. ParkingLot
-Slots: []*ParkingSlot – List of all slots in the parking lot
-
-4. Enum: VehicleType
-Constants:
-
-Bike
-
-Car
-
-Truck
-
-📘 UML Class Diagram (Textual Representation)
-plaintext
-Copy
-Edit
-+------------------+
-|     Vehicle      |
-+------------------+
-| - Number: string |
-| - Type: VehicleType |
-+------------------+
-
-+-----------------------+
-|    ParkingSlot        |
-+-----------------------+
-| - SlotNumber: int     |
-| - IsOccupied: bool    |
-| - Vehicle: *Vehicle   |
-| - SlotType: VehicleType |
-+-----------------------+
-
-+-----------------------+
-|     ParkingLot        |
-+-----------------------+
-| - Slots: []*ParkingSlot |
-+-----------------------+
-| + ParkVehicle(v *Vehicle): (int, error) |
-| + RemoveVehicle(slotNumber int): error |
-+-----------------------+
-
-+-------------------+
-|   VehicleType     |
-+-------------------+
-| + Bike            |
-| + Car             |
-| + Truck           |
-+-------------------+
 package main
 
 import (
@@ -581,8 +519,70 @@ func main() {
 }
 ```
 
-##Parling lot having ticket system Parking Lot
+## Simple Parking Lot
 ```go
+1. Vehicle
+Number: string – Vehicle registration number
+
+Type: VehicleType – Enum (Bike, Car, Truck)
+
+2. ParkingSlot
+SlotNumber: int – Unique identifier for the slot
+
+IsOccupied: bool – Flag to indicate if the slot is occupied
+
+Vehicle: *Vehicle – Pointer to the parked vehicle
+
+SlotType: VehicleType – Type of vehicle this slot supports
+
+3. ParkingLot
+Slots: []*ParkingSlot – List of all slots in the parking lot
+
+4. Enum: VehicleType
+Constants:
+
+Bike
+
+Car
+
+Truck
+
+📘 UML Class Diagram (Textual Representation)
+plaintext
+Copy
+Edit
++------------------+
+|     Vehicle      |
++------------------+
+| - Number: string |
+| - Type: VehicleType |
++------------------+
+
++-----------------------+
+|    ParkingSlot        |
++-----------------------+
+| - SlotNumber: int     |
+| - IsOccupied: bool    |
+| - Vehicle: *Vehicle   |
+| - SlotType: VehicleType |
++-----------------------+
+
++-----------------------+
+|     ParkingLot        |
++-----------------------+
+| - Slots: []*ParkingSlot |
++-----------------------+
+| + ParkVehicle(v *Vehicle): (int, error) |
+| + RemoveVehicle(slotNumber int): error |
++-----------------------+
+
++-------------------+
+|   VehicleType     |
++-------------------+
+| + Bike            |
+| + Car             |
+| + Truck           |
++-------------------+
 
 package main
 
@@ -691,6 +691,7 @@ func main() {
 ```
 
 ## Parking lot having ticket system
+
 ```go
 package main
 
