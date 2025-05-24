@@ -77,7 +77,7 @@ func (d *Document) DeleteContent(user User) {
 func main() {
 	user1 := User{"Rishabh", "rishabh1"}
 	user2 := User{"Sumit", "sumit1"}
-	user3 := User{"Sushant", "sushant1"}
+	// user3 := User{"Sushant", "sushant1"}
 
 	doc := NewDocument(user1, "initial content !! ", "myDoc")
 
