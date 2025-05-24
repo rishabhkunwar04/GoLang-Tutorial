@@ -1,4 +1,4 @@
-# Golang Convepts
+# Golang Concepts
 
 
 ### Worker pool pattern
