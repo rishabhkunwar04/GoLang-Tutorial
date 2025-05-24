@@ -7,7 +7,7 @@ import (
 
 type Show struct {
 	ID        string
-	Movie     *Movie
+	Movie     *Movie // using pointer here instead of copying it take references si it is faster
 	Theater   *Theater
 	StartTime time.Time
 	EndTime   time.Time
