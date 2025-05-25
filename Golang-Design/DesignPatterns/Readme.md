@@ -1,4 +1,9 @@
-### singleton design pattern
+## Singleton design pattern
+- The Singleton Design Pattern is a creational design pattern that ensures a class has only one instance and provides a global point of access to that instance.
+**usecases**:
+1. *Logging Service:* A single logger instance shared across modules
+2. *Thread Pool Manager:*	One shared pool to avoid resource overhead
+3. *Database Connection Pool*:	Manage all DB connections centrally
 ```Golang
 
 1. Lazy Initialization (Not Thread-Safe)
