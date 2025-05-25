@@ -1,5 +1,6 @@
 package main
 
+/*
 import "fmt"
 
 // Car is the product being built
@@ -69,3 +70,5 @@ func main() {
 
 	fmt.Println(car)
 }
+
+*/

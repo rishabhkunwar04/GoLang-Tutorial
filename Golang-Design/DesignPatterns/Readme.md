@@ -325,3 +325,93 @@ func main() {
 	booking.ProcessPayment()
 }
 ```
+
+## Observer Design Pattern
+
+* The Observer design pattern is a behavioral design pattern, used to create a one-to-many dependency between objects so that when one object (the subject) changes its state, all its dependents (observers) are notified and updated automatically. 
+
+**when to use**: Common in event-driven systems, UI frameworks, messaging systems, and real-time notifications.
+##### Components of the Observer Design Pattern
+* Subject: The subject maintains a list of observers and notifies them of state changes.
+* Observer: The observer interface defines the contract for concrete observer classes.
+* ConcreteSubject: A class that implements the subject interface and manages the observers.
+* ConcreteObserver: A class that implements the observer interface and receives notifications.
+
+```go
+1. Define the Observer Interface
+
+package main
+
+import "fmt"
+
+type Observer interface {
+	Update(status string)
+}
+2. Concrete Observers
+
+type EmailService struct{}
+
+func (e EmailService) Update(status string) {
+	fmt.Println("📧 EmailService: Booking status changed to", status)
+}
+
+type SMSService struct{}
+
+func (s SMSService) Update(status string) {
+	fmt.Println("📱 SMSService: Booking status changed to", status)
+}
+3. Subject Interface and Implementation
+
+type Subject interface {
+	Register(observer Observer)
+	Remove(observer Observer)
+	Notify()
+	SetStatus(status string)
+}
+
+type Booking struct {
+	observers []Observer
+	status    string
+}
+
+func (b *Booking) Register(o Observer) {
+	b.observers = append(b.observers, o)
+}
+
+func (b *Booking) Remove(o Observer) {
+	for i, obs := range b.observers {
+		if obs == o {
+			b.observers = append(b.observers[:i], b.observers[i+1:]...)
+			break
+		}
+	}
+}
+
+func (b *Booking) Notify() {
+	for _, o := range b.observers {
+		o.Update(b.status)
+	}
+}
+
+func (b *Booking) SetStatus(status string) {
+	b.status = status
+	b.Notify()
+}
+4. Test / Main
+
+func main() {
+	booking := &Booking{}
+
+	email := EmailService{}
+	sms := SMSService{}
+
+	booking.Register(email)
+	booking.Register(sms)
+
+	booking.SetStatus("Confirmed")
+
+	// Output:
+	// 📧 EmailService: Booking status changed to Confirmed
+	// 📱 SMSService: Booking status changed to Confirmed
+}
+```

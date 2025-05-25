@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"fmt"
 )
@@ -32,3 +33,5 @@ func main() {
 	app.run()
 
 }
+
+*/

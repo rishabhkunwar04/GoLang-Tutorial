@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"fmt"
 	"sort"
@@ -62,3 +63,5 @@ func groupAnagrams(strs []string) [][]string {
 	}
 	return res
 }
+
+*/

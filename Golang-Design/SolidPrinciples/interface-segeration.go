@@ -1,9 +1,10 @@
 package main
 
+/*
 import "fmt"
 
 ////  ****** Before interface segeration ********** //
-/*
+
 import "fmt"
 
 type Printer interface {
@@ -31,7 +32,7 @@ func main() {
 	printer.PrintDocument()
 }
 
-*/
+
 //  ****** After interface segeration ********** //
 
 // Segregated interfaces
@@ -76,3 +77,4 @@ func main() {
 	var ap Printer = AdvancedPrinter{}
 	ap.PrintDocument()
 }
+*/

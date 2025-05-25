@@ -1,5 +1,6 @@
 package main
 
+/*
 import "fmt"
 
 // Shape interface
@@ -41,3 +42,5 @@ func main() {
 	shape := factory.GetShape("Square")
 	shape.Draw()
 }
+
+*/
