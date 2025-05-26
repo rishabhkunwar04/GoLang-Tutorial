@@ -139,6 +139,12 @@ func (e *enumSingleton) DoSomething() {
 
 **disadvantage** : extra boiler plate code added for obj creation
 
+**Immutability and Builder**
+Builder pattern promotes immutability because:
+- All fields are set inside the builder, not changed after construction.
+- The built object can have only getter methods (no setters).
+- Ensures thread-safety and predictable behavior in concurrent environments.
+
 ```go
 package main
 
