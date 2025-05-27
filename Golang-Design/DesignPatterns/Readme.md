@@ -421,3 +421,182 @@ func main() {
 	// 📱 SMSService: Booking status changed to Confirmed
 }
 ```
+
+
+## Prototype Design Pattern
+- The Prototype Design Pattern is a creational design pattern that lets you create new objects by cloning existing ones, ins
+
+```go
+package main
+
+import "fmt"
+
+// Prototype interface
+type Shape interface {
+	Clone() Shape
+	Draw()
+}
+
+// Concrete prototype
+type Circle struct {
+	Radius int
+	Color  string
+}
+
+func (c *Circle) Clone() Shape {
+	newCircle := *c // shallow copy
+	return &newCircle
+}
+
+func (c *Circle) Draw() {
+	fmt.Printf("Drawing Circle: Radius = %d, Color = %s\n", c.Radius, c.Color)
+}
+
+func main() {
+	original := &Circle{Radius: 10, Color: "Red"}
+	copy := original.Clone()
+
+	original.Draw()
+	copy.Draw()
+}
+
+```
+
+## Decorator Design pattern
+- it is usefule when we want to exted and topup some functionality or feature while keeping the base layer intact
+- **it is useful when:**
+  1. You want to extend the functionality of a class without subclassing it.
+  2. You need to compose behaviors at runtime, in various combinations.
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+// Component interface
+type Coffee interface {
+	GetCost() int
+	GetDescription() string
+}
+
+// Concrete component
+type SimpleCoffee struct{}
+
+func (s *SimpleCoffee) GetCost() int {
+	return 5
+}
+
+func (s *SimpleCoffee) GetDescription() string {
+	return "Simple Coffee"
+}
+
+// Base decorator (embeds the component)
+type CoffeeDecorator struct {
+	coffee Coffee
+}
+
+func (d *CoffeeDecorator) GetCost() int {
+	return d.coffee.GetCost()
+}
+
+func (d *CoffeeDecorator) GetDescription() string {
+	return d.coffee.GetDescription()
+}
+
+// Concrete decorators
+type MilkDecorator struct {
+	CoffeeDecorator
+}
+
+func NewMilkDecorator(c Coffee) Coffee {
+	return &MilkDecorator{CoffeeDecorator{coffee: c}}
+}
+
+func (m *MilkDecorator) GetCost() int {
+	return m.coffee.GetCost() + 2
+}
+
+func (m *MilkDecorator) GetDescription() string {
+	return m.coffee.GetDescription() + ", Milk"
+}
+
+type SugarDecorator struct {
+	CoffeeDecorator
+}
+
+func NewSugarDecorator(c Coffee) Coffee {
+	return &SugarDecorator{CoffeeDecorator{coffee: c}}
+}
+
+func (s *SugarDecorator) GetCost() int {
+	return s.coffee.GetCost() + 1
+}
+
+func (s *SugarDecorator) GetDescription() string {
+	return s.coffee.GetDescription() + ", Sugar"
+}
+
+// --- Main client code ---
+func main() {
+	var coffee Coffee = &SimpleCoffee{}
+	fmt.Println(coffee.GetDescription(), "=> $", coffee.GetCost())
+
+	coffee = NewMilkDecorator(coffee)
+	coffee = NewSugarDecorator(coffee)
+	coffee = NewSugarDecorator(coffee) // Add extra sugar
+
+	fmt.Println(coffee.GetDescription(), "=> $", coffee.GetCost())
+}
+
+```
+
+## Adapter design Pattern
+- The Adapter Pattern is a structural design pattern that allows two incompatible interfaces to work together. It acts like a bridge between an existing class and a new interface.
+
+**When to use**
+   1. You want to use an existing class, but its interface doesn’t match your needs.
+   2. you need to integrate legacy code with new systems.
+
+  ***"Adapter lets classes work together that couldn’t otherwise because of incompatible interfaces."***
+
+**Real world usecase**
+1. A power adapter allows a 3-pin plug to fit into a 2-pin socket.It converts one interface to another without changing the actual plug or socket.   
+2. Legacy Code Integration: Adapts old systems to new interfaces without rewriting them.
+3. Third-party Library Integration: External libraries often have different APIs.
+
+```go
+1. Target Interface (New System Expects This)
+
+type PaymentProcessor interface {
+	Pay(amount float64)
+}
+2. Adaptee (Legacy System)
+
+type LegacyPayment struct{}
+
+func (l *LegacyPayment) MakePayment(money float64) {
+	fmt.Printf("Paid using legacy system: ₹%.2f\n", money)
+}
+3. Adapter
+
+type LegacyAdapter struct {
+	legacy *LegacyPayment
+}
+
+func (a *LegacyAdapter) Pay(amount float64) {
+	a.legacy.MakePayment(amount) // Adapts to new interface
+}
+4. Client Code
+
+func main() {
+	var processor PaymentProcessor
+
+	// Using the adapter to wrap legacy system
+	processor = &LegacyAdapter{legacy: &LegacyPayment{}}
+
+	// Now client uses the new interface
+	processor.Pay(1000.00)
+}
+```

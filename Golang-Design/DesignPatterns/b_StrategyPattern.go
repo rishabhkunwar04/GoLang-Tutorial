@@ -1,5 +1,6 @@
 package main
 
+/*
 import "fmt"
 
 type PaymentStrategy interface {
@@ -38,3 +39,5 @@ func main() {
 	booking.PaymentStrategy = CreditCardPayment{}
 	booking.ProcessPayment()
 }
+
+*/
