@@ -602,6 +602,9 @@ func main() {
 ```
 
 ## Command Design Pattern
+- The Command Pattern is a way to wrap a request (like turning on a light or printing a document) into a separate object.
+
+- Instead of calling a method directly, you create a command object that knows what to do and then tell it: "Execute!"
 
 ```go
 1. Command Interface
