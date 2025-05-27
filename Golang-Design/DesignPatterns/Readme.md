@@ -600,3 +600,70 @@ func main() {
 	processor.Pay(1000.00)
 }
 ```
+
+## Command Design Pattern
+
+```go
+1. Command Interface
+
+type Command interface {
+	Execute()
+}
+2. Receiver
+
+type Light struct{}
+
+func (l *Light) On() {
+	fmt.Println("Light is ON")
+}
+
+func (l *Light) Off() {
+	fmt.Println("Light is OFF")
+}
+3. Concrete Commands
+
+type LightOnCommand struct {
+	light *Light
+}
+
+func (c *LightOnCommand) Execute() {
+	c.light.On()
+}
+
+type LightOffCommand struct {
+	light *Light
+}
+
+func (c *LightOffCommand) Execute() {
+	c.light.Off()
+}
+4. Invoker
+
+type RemoteControl struct {
+	command Command
+}
+
+func (r *RemoteControl) SetCommand(c Command) {
+	r.command = c
+}
+
+func (r *RemoteControl) PressButton() {
+	r.command.Execute()
+}
+5. Client
+
+func main() {
+	light := &Light{}
+
+	lightOn := &LightOnCommand{light: light}
+	lightOff := &LightOffCommand{light: light}
+
+	remote := &RemoteControl{}
+
+	remote.SetCommand(lightOn)
+	remote.PressButton() // Light is ON
+
+	remote.SetCommand(lightOff)
+	remote.PressButton() // Light is OFF
+}
+```
