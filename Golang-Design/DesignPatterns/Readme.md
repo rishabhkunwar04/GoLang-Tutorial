@@ -1,3 +1,57 @@
+## Most asked  design pattern interview Questions
+```go
+🧱 1. Which design patterns have you used in your current project and why?
+Focus: Real-world usage, not textbook definitions.
+
+Tip: Be ready to explain why you chose a pattern (e.g., Builder for DTOs, Singleton for configuration service, Strategy for pluggable behavior).
+
+🏗️ 2. How would you implement a Singleton in a thread-safe way?
+Java: private static volatile instance, synchronized, or use enum.
+
+Go: sync.Once, init(), or package-level variables.
+
+🎭 3. How is Strategy different from State and Template Method?
+Strategy: Switch behavior at runtime.
+
+State: Internal state change drives behavior.
+
+Template Method: Base class defines flow; subclasses fill in.
+
+🎯 4. Where would you use the Strategy Pattern in a payment or notification system?
+Used to dynamically switch between different payment gateways or notification methods (email/SMS/push).
+
+🛠️ 5. How do you design a scalable notification system using Observer pattern?
+Pub/Sub using message queues (Kafka, RabbitMQ).
+
+Observers = services like Email, SMS, Slack integrations.
+
+🧩 6. What’s the difference between Factory and Abstract Factory?
+Factory: Creates one type of object.
+
+Abstract Factory: Produces families of related objects without specifying concrete classes.
+
+📐 7. How does the Builder pattern help in creating immutable objects?
+Used for complex objects with many optional fields.
+
+Builder builds the object, which has no setters (immutability).
+
+🧭 8. Implement a Command Pattern to support undo/redo for a text editor.
+Each command implements execute() and undo().
+
+Store history stack for undo/redo functionality.
+
+🧮 9. How would you apply Decorator Pattern in a logging system?
+Wrap base logger to add timestamp, log level, or format.
+
+Used for extending behavior without changing core logic.
+
+📦 10. What design pattern would you use to manage dynamic pricing rules in an e-commerce platform?
+Strategy pattern for dynamic pricing rules.
+
+Factory + Strategy to select and apply pricing logic based on user/location/etc.
+
+```
+
 ## Singleton design pattern
 - The Singleton Design Pattern is a creational design pattern that ensures a class has only one instance and provides a global point of access to that instance.
 **usecases**:
