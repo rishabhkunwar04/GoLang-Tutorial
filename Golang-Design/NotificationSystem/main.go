@@ -228,14 +228,12 @@ func main() {
 
 	nm.RegisterChannel(nm.ChannelMaker.CreateChannel("Email"))
 	nm.RegisterChannel(nm.ChannelMaker.CreateChannel("SMS"))
-	nm.RegisterChannel(nm.ChannelMaker.CreateChannel("Push"))
-	nm.RegisterChannel(nm.ChannelMaker.CreateChannel("InApp"))
 
 	nm.RegisterObserver(NewAuditLogger())
 
 	nm.SetUserPreference(UserPreference{
 		UserID:            "user123",
-		PreferredChannels: []string{"Email", "InApp"},
+		PreferredChannels: []string{"Email", "SMS"},
 		PreferredTypes:    []NotificationType{Alert, Transactional},
 	})
 
