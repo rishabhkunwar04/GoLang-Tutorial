@@ -53,22 +53,6 @@ func (s *SMSChannel) Send(notification Notification) error {
 }
 func (s *SMSChannel) ChannelName() string { return "SMS" }
 
-type PushChannel struct{}
-
-func (p *PushChannel) Send(notification Notification) error {
-	fmt.Printf("[Push] Sending to %s: %s - %s\n", notification.UserID, notification.Title, notification.Message)
-	return nil
-}
-func (p *PushChannel) ChannelName() string { return "Push" }
-
-type InAppChannel struct{}
-
-func (i *InAppChannel) Send(notification Notification) error {
-	fmt.Printf("[In-App] Sending to %s: %s - %s\n", notification.UserID, notification.Title, notification.Message)
-	return nil
-}
-func (i *InAppChannel) ChannelName() string { return "InApp" }
-
 // ChannelFactory - Factory Method Pattern
 // ---------------------------------------
 type ChannelFactory struct{}
@@ -79,10 +63,6 @@ func (f *ChannelFactory) CreateChannel(name string) NotificationChannel {
 		return &EmailChannel{}
 	case "SMS":
 		return &SMSChannel{}
-	case "Push":
-		return &PushChannel{}
-	case "InApp":
-		return &InAppChannel{}
 	default:
 		return nil
 	}
