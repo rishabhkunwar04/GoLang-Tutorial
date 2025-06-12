@@ -27,19 +27,19 @@ Model:	                    Represents the database schema or domain entity.
   - model.go
   - dto.go
   - handler.go
-main.go
-🧱 model.go — Domain/DB Layer
 
-package user
+1. models/user.go
+
+package models
 
 type User struct {
-	ID    int
-	Name  string
-	Email string
+	ID    int64  `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
 }
-📦 dto.go — Data Transfer Object
+2. dto/user_dto.go
 
-package user
+package dto
 
 type CreateUserRequest struct {
 	Name  string `json:"name"`
@@ -47,111 +47,156 @@ type CreateUserRequest struct {
 }
 
 type UserResponse struct {
-	ID    int    `json:"id"`
+	ID    int64  `json:"id"`
 	Name  string `json:"name"`
 	Email string `json:"email"`
 }
-📂 repository.go — DAO Layer
+3. repository/user_repository.go
 
-package user
+package repository
+
+import (
+	"example.com/project/models"
+)
 
 type UserRepository interface {
-	Save(user User) (User, error)
+	Create(user models.User) (models.User, error)
+	FindByID(id int64) (models.User, error)
+}
+Implementation:
+
+package repository
+
+import (
+	"database/sql"
+	"example.com/project/models"
+)
+
+type userRepositoryImpl struct {
+	db *sql.DB
 }
 
-type InMemoryUserRepo struct {
-	users []User
-	autoID int
+func NewUserRepository(db *sql.DB) UserRepository {
+	return &userRepositoryImpl{db: db}
 }
 
-func NewInMemoryUserRepo() *InMemoryUserRepo {
-	return &InMemoryUserRepo{}
+func (r *userRepositoryImpl) Create(user models.User) (models.User, error) {
+	res := r.db.QueryRow("INSERT INTO users(name, email) VALUES($1, $2) RETURNING id", user.Name, user.Email)
+	err := res.Scan(&user.ID)
+	return user, err
 }
 
-func (r *InMemoryUserRepo) Save(user User) (User, error) {
-	r.autoID++
-	user.ID = r.autoID
-	r.users = append(r.users, user)
-	return user, nil
+func (r *userRepositoryImpl) FindByID(id int64) (models.User, error) {
+	var user models.User
+	err := r.db.QueryRow("SELECT id, name, email FROM users WHERE id=$1", id).
+		Scan(&user.ID, &user.Name, &user.Email)
+	return user, err
 }
-🧠 service.go — Business Logic
+4. service/user_service.go
 
-package user
+package service
+
+import (
+	"example.com/project/dto"
+	"example.com/project/models"
+	"example.com/project/repository"
+)
 
 type UserService interface {
-	CreateUser(req CreateUserRequest) (UserResponse, error)
+	CreateUser(dto.CreateUserRequest) (dto.UserResponse, error)
+	GetUser(id int64) (dto.UserResponse, error)
 }
 
-type userService struct {
-	repo UserRepository
+type userServiceImpl struct {
+	repo repository.UserRepository
 }
 
-func NewUserService(repo UserRepository) UserService {
-	return &userService{repo: repo}
+func NewUserService(r repository.UserRepository) UserService {
+	return &userServiceImpl{repo: r}
 }
 
-func (s *userService) CreateUser(req CreateUserRequest) (UserResponse, error) {
-	user := User{
-		Name:  req.Name,
-		Email: req.Email,
-	}
-	savedUser, err := s.repo.Save(user)
-	if err != nil {
-		return UserResponse{}, err
-	}
-	return UserResponse{
-		ID:    savedUser.ID,
-		Name:  savedUser.Name,
-		Email: savedUser.Email,
-	}, nil
+func (s *userServiceImpl) CreateUser(req dto.CreateUserRequest) (dto.UserResponse, error) {
+	user := models.User{Name: req.Name, Email: req.Email}
+	created, err := s.repo.Create(user)
+	return dto.UserResponse(created), err
 }
-📲 controller.go — HTTP Handler (acts as Controller)
 
-package user
+func (s *userServiceImpl) GetUser(id int64) (dto.UserResponse, error) {
+	user, err := s.repo.FindByID(id)
+	return dto.UserResponse(user), err
+}
+
+5. controller/user_handler.go
+
+package controller
 
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
+
+	"example.com/project/dto"
+	"example.com/project/service"
+	"github.com/gorilla/mux"
 )
 
-type UserController struct {
-	service UserService
+type UserHandler struct {
+	Service service.UserService
 }
 
-func NewUserController(service UserService) *UserController {
-	return &UserController{service: service}
-}
-
-func (uc *UserController) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
-	var req CreateUserRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "invalid input", http.StatusBadRequest)
-		return
-	}
-
-	userResp, err := uc.service.CreateUser(req)
+func (h *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	var req dto.CreateUserRequest
+	_ = json.NewDecoder(r.Body).Decode(&req)
+	res, err := h.Service.CreateUser(req)
 	if err != nil {
-		http.Error(w, "could not create user", http.StatusInternalServerError)
+		http.Error(w, "Failed to create user", http.StatusInternalServerError)
 		return
 	}
-
-	json.NewEncoder(w).Encode(userResp)
+	json.NewEncoder(w).Encode(res)
 }
-🚀 main.go — Entry Point
+
+func (h *UserHandler) GetUser(w http.ResponseWriter, r *http.Request) {
+	id, _ := strconv.ParseInt(mux.Vars(r)["id"], 10, 64)
+	res, err := h.Service.GetUser(id)
+	if err != nil {
+		http.Error(w, "User not found", http.StatusNotFound)
+		return
+	}
+	json.NewEncoder(w).Encode(res)
+}
+
+6. main.go
 
 package main
 
 import (
+	"database/sql"
+	"log"
 	"net/http"
-	"user"
+
+	_ "github.com/lib/pq"
+	"github.com/gorilla/mux"
+
+	"example.com/project/controller"
+	"example.com/project/repository"
+	"example.com/project/service"
 )
 
 func main() {
-	repo := user.NewInMemoryUserRepo()
-	service := user.NewUserService(repo)
-	controller := user.NewUserController(service)
+	db, err := sql.Open("postgres", "user=postgres dbname=users sslmode=disable")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	http.HandleFunc("/users", controller.CreateUserHandler)
-	http.ListenAndServe(":8080", nil)
+	repo := repository.NewUserRepository(db)
+	svc := service.NewUserService(repo)
+	handler := &controller.UserHandler{Service: svc}
+
+	r := mux.NewRouter()
+	r.HandleFunc("/users", handler.CreateUser).Methods("POST")
+	r.HandleFunc("/users/{id}", handler.GetUser).Methods("GET")
+
+	log.Println("Server running at :8080")
+	log.Fatal(http.ListenAndServe(":8080", r))
 }
 ```
