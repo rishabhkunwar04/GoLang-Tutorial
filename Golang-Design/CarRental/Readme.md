@@ -93,14 +93,6 @@ func (p *CreditCardPaymentProcessor) ProcessPayment(amount float64) bool {
 // repository/car_repository.go
 package repository
 
-import (
-	"strings"
-	"sync"
-	"time"
-
-	"carrentalsystem/models"
-)
-
 type CarRepository struct {
 	cars map[string]*models.Car
 	mu   sync.RWMutex
@@ -188,27 +180,32 @@ func (r *ReservationRepository) Delete(id string) {
 // service/reservation_service.go
 package service
 
-import (
-	"crypto/rand"
-	"encoding/hex"
-	"fmt"
-	"time"
-
-	"carrentalsystem/dto"
-	"carrentalsystem/interfaces"
-	"carrentalsystem/models"
-	"carrentalsystem/repository"
-)
-
 type ReservationService struct {
-	carRepo         *repository.CarRepository
-	reservationRepo *repository.ReservationRepository
+	carRepo          *repository.CarRepository
+	reservationRepo  *repository.ReservationRepository
 	paymentProcessor interfaces.PaymentProcessor
 }
 
-func NewReservationService(carRepo *repository.CarRepository, resRepo *repository.ReservationRepository, pp interfaces.PaymentProcessor) *ReservationService {
-	return &ReservationService{carRepo, resRepo, pp}
+var (
+	serviceInstance *ReservationService
+	once            sync.Once
+)
+
+func NewReservationService(
+	carRepo *repository.CarRepository,
+	resRepo *repository.ReservationRepository,
+	pp interfaces.PaymentProcessor,
+) *ReservationService {
+	once.Do(func() {
+		serviceInstance = &ReservationService{
+			carRepo:          carRepo,
+			reservationRepo:  resRepo,
+			paymentProcessor: pp,
+		}
+	})
+	return serviceInstance
 }
+
 
 func (s *ReservationService) generateID() string {
 	bytes := make([]byte, 4)
@@ -271,12 +268,6 @@ func (s *ReservationService) CancelReservation(reservationID string) {
 // controller/reservation_controller.go
 package controller
 
-import (
-	"carrentalsystem/dto"
-	"carrentalsystem/service"
-	"fmt"
-)
-
 type ReservationController struct {
 	service *service.ReservationService
 }
@@ -302,24 +293,23 @@ func (rc *ReservationController) CancelReservation(id string) {
 
 package main
 
-import (
-	"carrentalsystem/controller"
-	"carrentalsystem/dto"
-	"carrentalsystem/interfaces"
-	"carrentalsystem/models"
-	"carrentalsystem/repository"
-	"carrentalsystem/service"
-	"time"
-)
-
 func main() {
 	// Setup dependencies
 	carRepo := repository.NewCarRepository()
 	reservationRepo := repository.NewReservationRepository()
-	paymentProcessor := &interfaces.CreditCardPaymentProcessor{}
+
+
+    // Choose strategy dynamically (can be config-driven)
+	var paymentProcessor interfaces.PaymentProcessor
+	paymentMethod := "credit" // simulate user or config input
+	if paymentMethod == "upi" {
+		paymentProcessor = &interfaces.UPIPaymentProcessor{}
+	} else {
+		paymentProcessor = &interfaces.CreditCardPaymentProcessor{}
+	}
+
 	reservationService := service.NewReservationService(carRepo, reservationRepo, paymentProcessor)
 	reservationController := controller.NewReservationController(reservationService)
-
 	// Seed some cars
 	car1 := &models.Car{
 		Make:              "Toyota",
