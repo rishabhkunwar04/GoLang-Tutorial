@@ -33,8 +33,15 @@ func (c *CarRepo) GetAllCar() []*models.Car {
 	return carList
 }
 
-func (c *CarRepo) FindAvilableCar() {
+func (c *CarRepo) FindAvilableCar(name, model string) []*models.Car {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+	var results []*models.Car
+	for _, car := range c.CarRepo {
+		if car.Name == name && car.Model == model {
+			results = append(results, car)
+		}
+	}
+	return results
 
 }

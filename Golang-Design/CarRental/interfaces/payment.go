@@ -1,5 +1,5 @@
 package interfaces
 
 type PaymentProcessor interface {
-	Pay(amount int) bool
+	Pay(amount float64) bool
 }
