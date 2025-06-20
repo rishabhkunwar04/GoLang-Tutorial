@@ -79,9 +79,9 @@ func (c CreditCard) GetDetails() string {
 }
 
 type BankAccount struct {
-	BankName string
+	BankName      string
 	AccountNumber string
-	IFSC string
+	IFSC          string
 }
 
 func (b BankAccount) Process(amount float64) error {
@@ -91,6 +91,33 @@ func (b BankAccount) Process(amount float64) error {
 
 func (b BankAccount) GetDetails() string {
 	return fmt.Sprintf("BankAccount: %s", b.AccountNumber)
+}
+
+// ---------- FACTORY ----------
+func PaymentMethodFactory(methodType string, args ...string) (PaymentMethod, error) {
+	switch methodType {
+	case "creditcard":
+		if len(args) != 4 {
+			return nil, errors.New("invalid arguments for CreditCard")
+		}
+		return CreditCard{
+			CardNumber: args[0],
+			Expiry:     args[1],
+			CVV:        args[2],
+			HolderName: args[3],
+		}, nil
+	case "bankaccount":
+		if len(args) != 3 {
+			return nil, errors.New("invalid arguments for BankAccount")
+		}
+		return BankAccount{
+			BankName:      args[0],
+			AccountNumber: args[1],
+			IFSC:          args[2],
+		}, nil
+	default:
+		return nil, errors.New("unsupported payment method")
+	}
 }
 
 // ---------- UTILITY ----------
@@ -226,8 +253,17 @@ func main() {
 
 	u1Acc.Balance = 10000
 
-	wallet.AddPaymentMethod("rishabh_card", CreditCard{"4111-1111-1111-1111", "12/25", "123", "Rishabh"})
-	wallet.AddPaymentMethod("amit_bank", BankAccount{"HDFC", "1234567890", "HDFC0001"})
+
+  // With Factory Design Pattern
+	cc, _ := PaymentMethodFactory("creditcard", "4111-1111-1111-1111", "12/25", "123", "Rishabh")
+	ba, _ := PaymentMethodFactory("bankaccount", "HDFC", "1234567890", "HDFC0001")
+
+ //// ****  in case of Without Factory design pattern
+ //   wallet.AddPaymentMethod("rishabh_card", CreditCard{"4111-1111-1111-1111", "12/25", "123", "Rishabh"})
+ // 	wallet.AddPaymentMethod("amit_bank", BankAccount{"HDFC", "1234567890", "HDFC0001"})
+
+	wallet.AddPaymentMethod("rishabh_card", cc)
+	wallet.AddPaymentMethod("amit_bank", ba)
 
 	err := wallet.Transfer(u1Acc.ID, u2Acc.ID, 1000, INR)
 	if err != nil {
@@ -241,4 +277,6 @@ func main() {
 	}
 }
 
+
 ```
+
