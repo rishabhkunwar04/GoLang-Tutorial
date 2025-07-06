@@ -27,19 +27,34 @@ func (p Permission) String() string {
 type Document struct {
 	Content string
 	DocName string
-	DocMap  map[string]Permission
+	//// one userId -> many permissions
+	// DocMap map[string][]Permission
+	DocMap map[string]Permission
 }
 
 func NewDocument(user User, content string, docName string) *Document {
 	return &Document{
 		Content: content,
 		DocName: docName,
-		DocMap:  map[string]Permission{user.UserID: OWNER},
+		// DocMap:  map[string][]Permission{u.UserID: {OWNER}},
+
+		DocMap: map[string]Permission{user.UserID: OWNER},
 	}
 }
 
+/*
+// helper: add perm if not already present
+func addPerm(list []Permission, perm Permission) []Permission {
+	for _, p := range list {
+		if p == perm { return list }
+	}
+	return append(list, perm)
+}
+*/
+
 func (d *Document) GrantAccess(user User, perm Permission) {
 	d.DocMap[user.UserID] = perm
+	//d.DocMap[u.UserID] = addPerm(d.DocMap[u.UserID], perm)
 }
 
 func (d *Document) RevokeAccess(user User) {
