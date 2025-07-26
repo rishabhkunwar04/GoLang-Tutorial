@@ -473,6 +473,45 @@ func main() {
 	}
 }
 
+
+```
+## Prototype Design Pattern
+- The Prototype Design Pattern is a creational design pattern that lets you create new objects by cloning existing ones, ins
+
+```go
+package main
+
+import "fmt"
+
+// Prototype interface
+type Shape interface {
+	Clone() Shape
+	Draw()
+}
+
+// Concrete prototype
+type Circle struct {
+	Radius int
+	Color  string
+}
+
+func (c *Circle) Clone() Shape {
+	newCircle := *c // shallow copy
+	return &newCircle
+}
+
+func (c *Circle) Draw() {
+	fmt.Printf("Drawing Circle: Radius = %d, Color = %s\n", c.Radius, c.Color)
+}
+
+func main() {
+	original := &Circle{Radius: 10, Color: "Red"}
+	copy := original.Clone()
+
+	original.Draw()
+	copy.Draw()
+}
+
 ```
 ## Strategy Design Pattern
 - The Strategy Design Pattern is a behavioral design pattern that enables selecting an algorithm's behavior at runtime
@@ -613,46 +652,173 @@ func main() {
 	// 📱 SMSService: Booking status changed to Confirmed
 }
 ```
+## Command Design Pattern
+- The Command Pattern is a way to wrap a request (like turning on a light or printing a document) into a separate object.
 
+- Instead of calling a method directly, you create a command object that knows what to do and then tell it: "Execute!"
 
-## Prototype Design Pattern
-- The Prototype Design Pattern is a creational design pattern that lets you create new objects by cloning existing ones, ins
+```go
+1. Command Interface
 
+type Command interface {
+	Execute()
+}
+2. Receiver
+
+type Light struct{}
+
+func (l *Light) On() {
+	fmt.Println("Light is ON")
+}
+
+func (l *Light) Off() {
+	fmt.Println("Light is OFF")
+}
+3. Concrete Commands
+
+type LightOnCommand struct {
+	light *Light
+}
+
+func (c *LightOnCommand) Execute() {
+	c.light.On()
+}
+
+type LightOffCommand struct {
+	light *Light
+}
+
+func (c *LightOffCommand) Execute() {
+	c.light.Off()
+}
+4. Invoker
+
+type RemoteControl struct {
+	command Command
+}
+
+func (r *RemoteControl) SetCommand(c Command) {
+	r.command = c
+}
+
+func (r *RemoteControl) PressButton() {
+	r.command.Execute()
+}
+5. Client
+
+func main() {
+	light := &Light{}
+
+	lightOn := &LightOnCommand{light: light}
+	lightOff := &LightOffCommand{light: light}
+
+	remote := &RemoteControl{}
+
+	remote.SetCommand(lightOn)
+	remote.PressButton() // Light is ON
+
+	remote.SetCommand(lightOff)
+	remote.PressButton() // Light is OFF
+}
+```
+
+## State Design pattern
+- it is behavioural design pattern
 ```go
 package main
 
 import "fmt"
 
-// Prototype interface
-type Shape interface {
-	Clone() Shape
-	Draw()
+// ----------- State Interface ------------
+type State interface {
+	InsertMoney(v *VendingMachine)
+	ProvideChangeMoney(v *VendingMachine)
+	DispenseProduct(v *VendingMachine)
 }
 
-// Concrete prototype
-type Circle struct {
-	Radius int
-	Color  string
+// ----------- NoMoneyState -------------
+type NoMoneyState struct{}
+
+func (n *NoMoneyState) InsertMoney(v *VendingMachine) {
+	fmt.Println("Inserting money to purchase product")
+	v.SetState(&HasMoneyState{})
 }
 
-func (c *Circle) Clone() Shape {
-	newCircle := *c // shallow copy
-	return &newCircle
+func (n *NoMoneyState) ProvideChangeMoney(v *VendingMachine) {
+	fmt.Println("No money to return")
 }
 
-func (c *Circle) Draw() {
-	fmt.Printf("Drawing Circle: Radius = %d, Color = %s\n", c.Radius, c.Color)
+func (n *NoMoneyState) DispenseProduct(v *VendingMachine) {
+	fmt.Println("No product to return! Insert money to purchase the item")
 }
 
+// ----------- HasMoneyState -------------
+type HasMoneyState struct{}
+
+func (h *HasMoneyState) InsertMoney(v *VendingMachine) {
+	fmt.Println("Money already inserted")
+}
+
+func (h *HasMoneyState) ProvideChangeMoney(v *VendingMachine) {
+	fmt.Println("Giving change money left after buying product")
+	v.SetState(&NoMoneyState{})
+}
+
+func (h *HasMoneyState) DispenseProduct(v *VendingMachine) {
+	fmt.Println("Please collect product")
+	v.SetState(&NoMoneyState{})
+}
+
+// ----------- VendingMachine -------------
+type VendingMachine struct {
+	currentState State
+}
+
+func NewVendingMachine() *VendingMachine {
+	return &VendingMachine{
+		currentState: &NoMoneyState{},
+	}
+}
+
+func (v *VendingMachine) SetState(s State) {
+	v.currentState = s
+}
+
+func (v *VendingMachine) InsertMoney() {
+	v.currentState.InsertMoney(v)
+}
+
+func (v *VendingMachine) ProvideChangeMoney() {
+	v.currentState.ProvideChangeMoney(v)
+}
+
+func (v *VendingMachine) DispenseProduct() {
+	v.currentState.DispenseProduct(v)
+}
+
+// ----------- Main -------------
 func main() {
-	original := &Circle{Radius: 10, Color: "Red"}
-	copy := original.Clone()
+	vendingMachine := NewVendingMachine()
 
-	original.Draw()
-	copy.Draw()
+	vendingMachine.InsertMoney()
+	vendingMachine.DispenseProduct()
+
+	fmt.Println("------------------")
+
+	vendingMachine.InsertMoney()
+	vendingMachine.InsertMoney()
+	vendingMachine.ProvideChangeMoney()
+	vendingMachine.DispenseProduct()
+
+	fmt.Println("------------------")
+
+	vendingMachine.InsertMoney()
+	vendingMachine.DispenseProduct()
+	vendingMachine.ProvideChangeMoney()
 }
 
 ```
+
 
 ## Decorator Design pattern
 - it is usefule when we want to exted and topup some functionality or feature while keeping the base layer intact
@@ -793,72 +959,3 @@ func main() {
 }
 ```
 
-## Command Design Pattern
-- The Command Pattern is a way to wrap a request (like turning on a light or printing a document) into a separate object.
-
-- Instead of calling a method directly, you create a command object that knows what to do and then tell it: "Execute!"
-
-```go
-1. Command Interface
-
-type Command interface {
-	Execute()
-}
-2. Receiver
-
-type Light struct{}
-
-func (l *Light) On() {
-	fmt.Println("Light is ON")
-}
-
-func (l *Light) Off() {
-	fmt.Println("Light is OFF")
-}
-3. Concrete Commands
-
-type LightOnCommand struct {
-	light *Light
-}
-
-func (c *LightOnCommand) Execute() {
-	c.light.On()
-}
-
-type LightOffCommand struct {
-	light *Light
-}
-
-func (c *LightOffCommand) Execute() {
-	c.light.Off()
-}
-4. Invoker
-
-type RemoteControl struct {
-	command Command
-}
-
-func (r *RemoteControl) SetCommand(c Command) {
-	r.command = c
-}
-
-func (r *RemoteControl) PressButton() {
-	r.command.Execute()
-}
-5. Client
-
-func main() {
-	light := &Light{}
-
-	lightOn := &LightOnCommand{light: light}
-	lightOff := &LightOffCommand{light: light}
-
-	remote := &RemoteControl{}
-
-	remote.SetCommand(lightOn)
-	remote.PressButton() // Light is ON
-
-	remote.SetCommand(lightOff)
-	remote.PressButton() // Light is OFF
-}
-```

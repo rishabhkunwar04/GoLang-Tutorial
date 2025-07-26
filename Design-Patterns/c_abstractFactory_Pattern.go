@@ -1,5 +1,6 @@
 package main
 
+/*
 import (
 	"fmt"
 	"strings"
@@ -132,3 +133,5 @@ func main() {
 		color.Fill() // Output: Filling with Red
 	}
 }
+
+*/
