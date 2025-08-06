@@ -11,9 +11,7 @@ Capitalized names for public (exported) identifiers.
 Lowercase names for private (unexported) identifiers.
 
 Example:
-go
-Copy
-Edit
+
 package user
 
 type User struct {
@@ -28,15 +26,14 @@ func (u *User) GetEmail() string {
 func (u *User) setEmail(e string) {
     u.email = e
 }
+
 ✅ 2. Abstraction
 Abstraction means exposing only essential features and hiding the complexity.
 
 Go achieves it using:
 Interfaces: Define behavior without exposing implementation.
 
-go
-Copy
-Edit
+
 type Animal interface {
     Speak() string
 }
@@ -58,9 +55,7 @@ Polymorphism allows different types to be treated as the same interface.
 Go achieves it using:
 Interface implementation without explicit declaration.
 
-go
-Copy
-Edit
+
 type Shape interface {
     Area() float64
 }
@@ -90,9 +85,7 @@ Both Circle and Square can be passed to PrintArea().
 Go does not support classical inheritance, but it uses composition, which is more flexible.
 
 Composition example:
-go
-Copy
-Edit
+
 type Person struct {
     Name string
 }
@@ -107,18 +100,11 @@ type Employee struct {
 }
 Now Employee inherits Greet() method from Person.
 
-go
-Copy
-Edit
+
 e := Employee{
     Person: Person{Name: "Rishabh"},
     EmployeeID: "123",
 }
 e.Greet() // Hello, Rishabh
-Summary Table
-OOP Pillar	Go Mechanism
-Encapsulation	Exported/Unexported fields/methods
-Abstraction	Interfaces
-Polymorphism	Implicit interface implementation
-Inheritance	Composition (via embedded types)
+
 ```
