@@ -1,4 +1,26 @@
 ## Google Doc Design Basics
+
+#### Functional Requirements
+
+- User should have unique UserID and Username.
+- Create a document with:
+DocName, initial content.
+Owner set at creation with full permissions.
+Permission types: READ, WRITE, OWNER.
+Map each UserID to a single permission (DocMap).
+OWNER can grant or revoke permissions for other users.
+Operations:
+Read → Allowed for OWNER & READ.
+Write → Allowed for OWNER & WRITE.
+Delete → Allowed only for OWNER.
+- Deny unauthorized access for any operation.
+
+#### Non-Functional Requirements
+
+- O(1) permission lookup using hash map.
+- Extensible for future permissions (e.g., COMMENT, SHARE).
+- In-memory data storage (no DB).
+- Can be made thread-safe for concurrent access (future scope).
 ```go
 package main
 
