@@ -2,25 +2,40 @@ package main
 
 import (
 	"fmt"
+	"sync"
 )
 
-// Function that modifies the first element of a slice
-func modifySlice(s []int) {
-	s[0] = 100 // Modify the zeroth element
-	fmt.Println("Inside function, slice:", s)
+var urls = []string{
+	"https://123.com",
+	"https://123.com",
+	"https://123.com",
+}
+
+func worker(job chan string, res chan string, wg *sync.WaitGroup) {
+	for x := range job {
+		result := x + "a"
+		res <- result
+	}
+	wg.Done()
+
 }
 func main() {
-	arr := [3]int{1, 2, 3}
-	s := arr[:] // Create a slice referencing the whole array
+	job := make(chan string, len(urls))
+	res := make(chan string, len(urls))
 
-	fmt.Println("Before function call, array:", arr)
-	modifySlice(s)
-	fmt.Println("After function call, array:", arr)
+	var wg sync.WaitGroup
+	for _, v := range urls {
+		wg.Add(1)
+		go worker(job, res, &wg)
+		job <- v
+	}
+	close(job)
+
+	wg.Wait()
+	close(res)
+
+	for x := range res {
+		fmt.Println(x)
+	}
+
 }
-
-/*
-Before function call, array: [1 2 3]
-Inside function, slice: [100 2 3]
-After function call, array: [100 2 3]
-
-*/
